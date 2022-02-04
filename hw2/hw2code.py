@@ -132,11 +132,11 @@ def main():
 	#problem1B()
 	#problem2A()
 	#problem2B()
-	#problem2C()
-	#problem2D()
+	problem2C()
+	problem2D()
 	problem3A()
 	#problem3B()
-	#problem3C()
+	problem3C()
 	problem4A()
 
 if __name__ == "__main__":
