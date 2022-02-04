@@ -6,7 +6,8 @@ import numpy as np
 
 #problem 1- smallest among the squares of list L 
 def problem1(L):
-	return min([L[n]**2 for n in range(len(L))])
+	#return min([L[n]**2 for n in range(len(L))])
+	return min(n**2 for n in L)
 
 #problem 2- second-from-last element (third highest index position) of the numpy array a.
 def problem2(a):
@@ -35,7 +36,7 @@ def problem6():
 
 #largest possible integer m where 1000-100m + 5*m^2 - (1/15)m^3 >= 500
 def problem7():
-	i = 37 
+	i = 37 #start at 37, where the function decreases indefinitely
 	while((1000 - 100*i + (5 * (i**2)) - ((1/15)*(i**3))) >= 500):
 		i += 1
 	return i-1
