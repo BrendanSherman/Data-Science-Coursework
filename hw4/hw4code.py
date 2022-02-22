@@ -1,4 +1,4 @@
-#Homework 4: COVID data analysis
+#Homework 4: COVID data analysis (Pandas, MPL, numpy)
 #Writeup contains explanation of all code
 #Author: Brendan Sherman 
 
@@ -12,7 +12,7 @@ def print_labels(df):
 
 #Problem 1 - Correlation between vaccination rate and covid-related deaths
 def q1(df):
-	iso_codes = np.unique(df['iso_code']) #1D array of 'iso_codes' column
+	iso_codes = np.unique(df['iso_code']) #1D array of unique countries
 
 	#cleans rows with 'nan' values under specified columns
 	df = df.dropna(subset=['total_deaths_per_million', 'people_fully_vaccinated_per_hundred'])
@@ -39,7 +39,7 @@ def q1(df):
 
 #Problem 2- Continuing problem 1 analysis, now considering time granularity
 def q2(df):
-	iso_codes = np.unique(df['iso_code']) #1D array of 'iso_codes' column
+	iso_codes = np.unique(df['iso_code']) #1D array of unique countries
 	corrs = np.empty((0, 2))
 
 	for i in range(iso_codes.size):
@@ -61,13 +61,44 @@ def q2(df):
 	boxplot(corrs, notch=True)
 	show()
 
+#given a string s, return corresponding integer value in base 256 
+def q3a(s):
+	s_reverse = s[::-1] 
+	val = 0
+	i = 0
+	for c in s_reverse:
+		val += (ord(c) * (256**i))
+		i += 1
+
+	return val
+
+#Countries in lowest and highest quartiles for total COVID deaths
+def q3b(df):
+	iso_codes = np.unique(df['iso_code']) #1D array of unique countries
+
+	country_max_deaths = {} #dictionary relating iso_code to max deaths for that country
+
+	for i in range(iso_codes.size):
+		country_rows = df[df['iso_code'] == iso_codes[i]] #extract all rows for given country
+		max_deaths = country_rows['total_deaths_per_million'].max()
+		key = q3a(iso_codes[i])
+
+		country_max_deaths[key] = max_deaths
+
+	print(country_max_deaths)
+
+
+
+
 	
 def main(): 
 	df = pd.read_csv('owid-covid-data.csv')
 
 	#print_labels(df)
 	#q1(df)
-	q2(df)
+	#q2(df)
+	#print(q3a("CAN"))
+	q3b(df)
 	
 
 if __name__ == "__main__":
