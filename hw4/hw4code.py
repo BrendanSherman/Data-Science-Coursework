@@ -76,7 +76,7 @@ def q3a(s):
 def q3b(df):
 	iso_codes = np.unique(df['iso_code']) #1D array of unique countries
 
-	country_max_deaths = {} #dictionary relating iso_code to max deaths for that country
+	country_max_deaths = {} #dictionary relating iso_code to max deaths for each country
 
 	for i in range(iso_codes.size):
 		country_rows = df[df['iso_code'] == iso_codes[i]] #extract all rows for given country
@@ -85,21 +85,94 @@ def q3b(df):
 
 		country_max_deaths[key] = max_deaths
 
-	print(country_max_deaths)
+	#computing 25th and 75th percentiles for maximum deaths
+	q1 = np.nanquantile(list(country_max_deaths.values()), .25)
+	q3 = np.nanquantile(list(country_max_deaths.values()), .75)
 
+	top_quarter = []
+	low_quarter = []
 
+	i = 0 
+	for key, val in country_max_deaths.items():
+		if(val >= q3 and not(np.isnan(val)) and len(iso_codes[i]) == 3):
+			top_quarter.append(iso_codes[i])
+		elif(val < q1 and not(np.isnan(val)) and len(iso_codes[i]) == 3):
+			low_quarter.append(iso_codes[i])
+		i += 1
 
-
+	top_quarter = sorted(top_quarter)
+	low_quarter = sorted(low_quarter)
 	
+	print("Countries within top quarter of maximum covid deaths (per million people):")
+	print(top_quarter)
+	print("Countries within bottom quarter of maximum covid deaths (per million people):")
+	print(low_quarter)
+	return [low_quarter, top_quarter]
+
+#given a string s, remove quotation and whitespace characters
+def strip_quotes_spaces(s):
+	return s.strip("\" ")
+
+#Q4a: Replace iso_code and latitude column data with stripped strings
+def q4a(geo_df):
+	stripped_iso_col = geo_df['Alpha-3 code'].apply(strip_quotes_spaces)
+	stripped_lat_col = geo_df['Latitude (average)'].apply(strip_quotes_spaces)
+
+	geo_df['Alpha-3 code'] = stripped_iso_col 
+	geo_df['Latitude (average)'] = stripped_lat_col
+
+#Q4b: Given a country (iso code), return its average latitude
+def get_avg_lat(geo_df, iso):
+	row = geo_df[geo_df['Alpha-3 code'].astype('str').str.fullmatch(iso)]
+	avg_lat = float(row['Latitude (average)'].iat[0])
+
+	if(not np.isnan(avg_lat)):
+		return avg_lat
+	else:
+		return np.nan
+
+#Q4b: create list of avg latitudes for low and high mortality countries (from q3)
+def q4b(df, geo_df):
+	q4a(geo_df)
+	iso_lists = q3b(df)
+	low_mortality_quarter = iso_lists[0]
+	high_mortality_quarter = iso_lists[1]
+
+	high_mortality_avg_lats = []
+	low_mortality_avg_lats = []
+
+	for i in high_mortality_quarter:
+		high_mortality_avg_lats.append(get_avg_lat(geo_df, i))
+
+	for i in low_mortality_quarter:
+		low_mortality_avg_lats.append(get_avg_lat(geo_df, i))
+
+	print("Average latitude of lower quartile COVID mortality countries:")
+	print(low_mortality_avg_lats)
+	print("Average latitude of higher quartile COVID mortality countries:")
+	print(high_mortality_avg_lats)
+
+	return [low_mortality_avg_lats, high_mortality_avg_lats]
+
+#Q4c: Compute medians of both average latitude lists, evaluate significance
+def q4c(df, geo_df):
+	avg_lats = q4b(df, geo_df)
+
+	print("Median latitutde for countries in lowest quartile: " + str(round(np.median(avg_lats[0]), 3)))
+	print("Median latitutde for countries in highest quartile: " + str(round(np.median(avg_lats[1]), 3)))
+
+	boxplot(avg_lats, notch=True)
+	show()
+
 def main(): 
 	df = pd.read_csv('owid-covid-data.csv')
+	geo_df = pd.read_csv("countries_codes_and_coordinates.csv")
 
 	#print_labels(df)
 	#q1(df)
 	#q2(df)
-	#print(q3a("CAN"))
-	q3b(df)
-	
+	#q3b(df)
+	q4c(df, geo_df)
 
 if __name__ == "__main__":
 	main()
