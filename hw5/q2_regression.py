@@ -1,5 +1,5 @@
 #Brendan Sherman
-#Homework 5 Question 2: Machine learning linear regression model
+#Homework 5 Question 2: Linear regression model
 #Writeup contains all output/explanations of code
 
 import numpy as np 
@@ -8,12 +8,16 @@ from sklearn.datasets import fetch_openml
 from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LinearRegression
 
-#Filters dataset, trains and evaluates linear regression model
-def q2a(ds):	
-	#Instantiate imputer to replace missing values within dataset
+#Instantiate imputer to replace missing values within dataset
+def impute(ds):
 	imp = SimpleImputer(missing_values = np.nan, strategy="mean")
 	imp = imp.fit(ds.data) 
-	ds.data = imp.transform(ds.data)
+	ds.data = imp.transform(ds.data) 
+
+#Trains and evaluates linear regression model
+def q2a(ds):
+	#Handle missing values 
+	impute(ds)
 
 	#Fit a linear regression model to the data, using actual target values 
 	model = LinearRegression(fit_intercept=True).fit(ds.data, ds.target) 
@@ -25,10 +29,12 @@ def q2a(ds):
 	predictions = model.predict(ds.data)
 	prop_correct = ((predictions[predictions[:] == ds.target[:]].size)) 
 	
-	return [r_sq, prop_correct]
+	return [r_sq, prop_correct, model.coef_, model.intercept_]
 
 #Split dataset into training, test regions to estimate out of sample performance 
 def q2b(ds):
+	impute(ds)
+
 	#Randomly split indices into two groups (2:1 ratio)
 	indices = list(range(0, ds.data.shape[0])) 
 	random.shuffle(indices)
@@ -45,15 +51,14 @@ def q2b(ds):
 	model = LinearRegression().fit(training_data, training_targets)
 
 	#Evaluate model against training, test data
-	return(model.score(training_data, training_targets), model.score(test_data, test_targets))
+	return[model.score(training_data, training_targets), model.score(test_data, test_targets)]
 
 def main(): 	
 	ds = fetch_openml(name="cholesterol", version=1)
-	
+
 	scores = q2a(ds)
 	print("r-squared value: " + str(round(scores[0], 2)))
 	print("percentage of exactly correct predictions: " + str(round(scores[1], 2)))
-
 	r_sqs = q2b(ds)
 	print("r-squared value (Training instances): " + str(round(r_sqs[0], 2)))
 	print("r-squared value (Test instances): " + str(round(r_sqs[1], 2)))
