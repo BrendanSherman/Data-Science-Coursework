@@ -1,5 +1,9 @@
-import numpy as np
+#Brendan Sherman
+#Homework 5 Question 1: Covariance and correlation
+#Writeup contains all output/explanations of code
+
 from sklearn.datasets import load_diabetes
+import numpy as np
 
 #Computes covariance matrix of non-target attributes
 def q1a(d):
