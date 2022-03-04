@@ -27,7 +27,7 @@ def q2a(ds):
 
 	#Evaluate model performance by % of exactly correct predictions
 	predictions = model.predict(ds.data)
-	prop_correct = ((predictions[predictions[:] == ds.target[:]].size)) 
+	prop_correct = (predictions[predictions[:] == ds.target[:]].size) / ds.target.size
 	
 	return [r_sq, prop_correct, model.coef_, model.intercept_]
 

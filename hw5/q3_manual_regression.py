@@ -32,7 +32,14 @@ def q3(ds):
 
 def main():
 	ds = fetch_openml(name="cholesterol", version=1)
-	print(q3(ds))
+	result = q3(ds)
+	
+	print("Coefficient Vector (manually computed): ")
+	print(result[0])
+	print("Coefficient Vector (using SKL): " )
+	print(result[1])
+	print("Difference between vectors (element-wise): ")
+	print(result[2])
 
 if __name__ == "__main__":
 	main()

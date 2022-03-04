@@ -9,7 +9,7 @@ import numpy as np
 def q1a(d):
 	return np.cov(d.data, rowvar=False)
 
-#Uses matrix to extract correlation between bmi (col 2) and hdl (col 6) attributes
+#Uses matrix to extract correlation between bmi (col 3) and hdl (col 7) attributes
 def q1b(d):
 	cov_matrix = q1a(d)
 	bmi_hdl_corr = cov_matrix[2, 6]
@@ -42,10 +42,10 @@ def q1d(d):
 def main(): 
 		d = load_diabetes() #Store diabetes dataset (contains target and non-target matrices)
 		print("Shape of covariance matrix (for non-target attributes): " + str(q1a(d).shape))
-		print("Correlation between bmi and hdl attributes: " + str(q1b(d)))
+		print("Correlation between bmi and hdl attributes: " + str(round(q1b(d), 6)))
 		test_medians = q1c(d)
-		print("Median hdl among patients with bmi greater than the mean: " + str(test_medians[0]))
-		print("Median hdl among patients with bmi less than the mean: " + str(test_medians[1]))
+		print("Median hdl among patients with bmi greater than the mean: " + str(round(test_medians[0], 3)))
+		print("Median hdl among patients with bmi less than the mean: " + str(round(test_medians[1], 3)))
 		print("Cohen's d (Effect size): " + str(round(q1d(d), 4)))
 
 if __name__ == "__main__":
